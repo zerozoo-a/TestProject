@@ -1,30 +1,46 @@
 let comments = [];
 let commentsCnt = 0;
 let times = [];
-let isSpam = false;
+const slang = {
+  kr: ['바보', '해삼', '말미잘', '도지코인'],
+  eu: ['nerd', 'malfoy', 'dodgeCoin'],
+};
+
+const detective = () => {
+  const waitSeconds = () => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res('lock');
+      }, 3000);
+    });
+  };
+  const getWait = async () => {
+    const result = await waitSeconds();
+    document.getElementById('comment').disabled = false;
+    document.getElementById('comment').focus();
+  };
+  const firstCommentTime = new Date();
+  times.push(firstCommentTime);
+  if (commentsCnt < 1) {
+    return;
+  }
+  if (times[commentsCnt] - times[commentsCnt - 1] < 1100) {
+    document.getElementById('comment').disabled = true;
+    getWait();
+    return;
+  }
+};
 
 document.getElementById('comment').focus();
 const getComment = (event) => {
   event.preventDefault();
-  if (isSpam) {
-    return;
-  }
-
+  detective();
   comments.push(document.querySelector('#comment').value);
   document.querySelector('#comment').value = '';
   setComment(comments);
   makeDeleteBtn();
   makeModifyBtn(comments);
 };
-// const timeStamp = () => {
-//   let time = new Date();
-//   let seconds = time.getSeconds();
-//   times.push({
-//     time: time,
-//     seconds: seconds,
-//   });
-//   console.log(commentsCnt);
-// };
 
 const setComment = (comments) => {
   const list = document.createElement('li');
@@ -46,8 +62,6 @@ const makeDeleteBtn = () => {
         document.getElementById(id + 'modifyForm').remove();
       }
       document.getElementById(id).remove();
-      //   comments[id]
-      //   document.getElementById(id + 'modifyBtn').innerHTML = '수정';
     }
   };
   document.getElementById(id).appendChild(deleteBtn);
@@ -87,6 +101,8 @@ const makeModifyBtn = (comments) => {
       modifySubmitBtn.innerHTML = '등록';
 
       const modifyForm = document.createElement('form');
+      //
+
       modifyForm.id = id + 'modifyForm';
       modifyForm.appendChild(modifyInputComment);
       modifyForm.appendChild(modifySubmitBtn);
@@ -99,14 +115,12 @@ const makeModifyBtn = (comments) => {
         comments[id - 1] = modifiedValue;
 
         document.getElementById(id + 'comment').innerText = modifiedValue;
-        // if (modifyForm) modifyForm.remove();
-        // document.getElementById(id + 'modify').remove();
-        // document.getElementById(id + 'modifySubmit').remove();
         document.getElementById(id + 'modifyForm').remove();
         document.getElementById('comment').focus();
       };
 
-      modifySubmitBtn.onclick = () => {
+      modifySubmitBtn.onclick = (e) => {
+        e.preventDefault();
         modifySubmitBtnFnc();
       };
 
