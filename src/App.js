@@ -11,9 +11,12 @@ const getComment = (event) => {
 
 const setComment = (comments) => {
   const list = document.createElement('li');
-  list.innerText = comments[comments.length - 1];
+  const div = document.createElement('div');
+  div.innerText = comments[comments.length - 1];
   list.id = ++commentsCnt;
+  div.id = commentsCnt + 'comment';
   document.querySelector('#showList').appendChild(list);
+  document.getElementById(commentsCnt).appendChild(div);
 };
 
 const makeDeleteBtn = () => {
@@ -59,12 +62,33 @@ const makeModifyBtn = (comments) => {
       document
         .getElementById(id)
         .insertAdjacentElement('afterend', modifyInputComment);
+
+      //   modifySubmitBtn.onclick = () => {
+      //     modifyBtn.innerHTML = '수정';
+      //     const modifiedValue = document.getElementById(id + 'modify').value;
+      //     console.log(comments[id - 1]);
+      //     comments[id - 1] = modifiedValue;
+
+      //     document.getElementById(id + 'comment').innerText = modifiedValue;
+      //     document.getElementById(id + 'modify').remove();
+      //     document.getElementById(id + 'modifySubmit').remove();
+      //   };
+      const modifySubmitBtnFnc = () => {
+        modifyBtn.innerHTML = '수정';
+        const modifiedValue = document.getElementById(id + 'modify').value;
+        console.log(comments[id - 1]);
+        comments[id - 1] = modifiedValue;
+
+        document.getElementById(id + 'comment').innerText = modifiedValue;
+        document.getElementById(id + 'modify').remove();
+        document.getElementById(id + 'modifySubmit').remove();
+      };
+
       modifySubmitBtn.onclick = () => {
-        console.log('hello?');
+        modifySubmitBtnFnc();
       };
 
       comments.map((v, i) => {
-        console.log(v);
         if (parseInt(i + 1) === id) {
           return;
         }
