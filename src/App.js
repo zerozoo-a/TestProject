@@ -56,12 +56,19 @@ const makeModifyBtn = (comments) => {
       const modifySubmitBtn = document.createElement('button');
       modifySubmitBtn.id = id + 'modifySubmit';
       modifySubmitBtn.innerHTML = '등록';
-      document
-        .getElementById(id)
-        .insertAdjacentElement('afterend', modifySubmitBtn);
-      document
-        .getElementById(id)
-        .insertAdjacentElement('afterend', modifyInputComment);
+
+      const modifyForm = document.createElement('form');
+      modifyForm.appendChild(modifyInputComment);
+      modifyForm.appendChild(modifySubmitBtn);
+
+      document.getElementById(id).insertAdjacentElement('afterend', modifyForm);
+
+      //   document
+      //     .getElementById(id)
+      //     .insertAdjacentElement('afterend', modifySubmitBtn);
+      //   document
+      //     .getElementById(id)
+      //     .insertAdjacentElement('afterend', modifyInputComment);
 
       //   modifySubmitBtn.onclick = () => {
       //     modifyBtn.innerHTML = '수정';
