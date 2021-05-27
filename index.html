@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='./style.css'>
     <title>윤영주_과제</title>
 </head>
+
 <body>
     <div >
         <ol id='showList'>
@@ -21,20 +23,73 @@
         <form
         action=''
         method='POST'
-        id='form-ex'
         onsubmit='getComment(event);'>
             <div class='form-ex' >
                 <label 
                 for='comment'>
                     your text
                 </label>
-                <input type="text" name='comment' id='comment' required>
-                <input type='submit' value='등록'>
+                <input 
+                onclick='askLogin("logIn")'
+                autocomplete="off"
+                type="text" name='comment' id='comment' required>
+                <input 
+                type='submit' value='등록' id='submit'>
             </div>
         </form>
     </div>
 
+
+    <div 
+    id='snsWindow'
+    class='invisible'>
+        <h3>SNS로그인해서 댓글 쓰기</h3>
+        <div id='naverLogIn'
+        onclick="askLogin('naver')"
+        >네이버로 로그인</div>
+        <div id='kakaoTalkLogIn'
+        onclick="askLogin('kakaoTalk')"
+        >카카오톡으로 로그인</div>
+        <div id='facebookLogIn'
+        onclick="askLogin('faceBook')"
+        >페이스북으로 로그인</div>
+        <div id='googleLogIn'
+        onclick="askLogin('google')"
+        >구글로 로그인</div>
+        <div id='twitterLogIn'
+        onclick="askLogin('twitter')"
+        >트위터로 로그인</div>
+    </div>
+    <div id='logInWindow'>
+        <form
+        method='POST'
+        id='logInWindowForm'
+        class='invisible'
+        onsubmit="logIn(event)"
+        >
+        <label 
+        for='id'>
+            ID: 
+        </label>
+        <input type='text'
+        id='inputId'
+        required
+        placeholder="ID:please input your sns ID, PWD"
+        >
+        <label
+        for='pwd'
+        >PASS WORD: </label>
+        <input type='password'
+        id='inputPwd'
+        required
+        >
+        <input type='submit' value='log in'>
+    </form>
+
+    </div>
+
     <script 
-    src='./src/App.js'></script>
+    src='./src/App.js'>
+</script>
 </body>
 </html> 
