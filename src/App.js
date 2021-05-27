@@ -1,17 +1,127 @@
+// import { userInfo } from './userInfo.js';
+let isLogIn = false;
 let comments = [];
 let commentsCnt = 0;
 let times = [];
-const slang = {
+const restrictWords = {
   kr: ['바보', '해삼', '말미잘', '도지코인'],
-  eu: ['nerd', 'malfoy', 'dodgeCoin'],
+  eu: ['nerd', 'LaLaLa Love Song', 'dodgeCoin'],
+  isRestricted: false,
+};
+let dummyUserData = {
+  sns: null,
+  user1: [
+    { id: 'naverID', pwd: '1234' },
+    { id: 'secondID', pwd: '1234' },
+  ],
+  user2: [
+    { id: 'kakaoID', pwd: '1233' },
+    { id: 'kakaoId', pwd: '1233' },
+  ],
+  user3: [{ id: 'facebookID', pwd: '1232' }],
+  user4: [{ id: 'googleID', pwd: '1231' }],
+  user5: [{ id: 'twitterID', pwd: '1230' }],
+};
+const logIn = (event) => {
+  if (event) event.preventDefault();
+  const id = document.getElementById('inputId').value;
+  const pwd = document.getElementById('inputPwd').value;
+  const sns = dummyUserData.sns;
+  const users = dummyUserData;
+
+  const showDown = (nodeEl) => {
+    nodeEl.classList.add('invisible');
+    nodeEl.classList.remove('up');
+  };
+  const logInWindowForm = document.getElementById('logInWindowForm');
+
+  const authenticate = (sns, id, pwd) => {
+    const checkIdPwd = (userN) => {
+      const index = userN.findIndex((findId) => findId.id === id);
+      if (index === -1) return;
+      return userN[index].id === id && userN[index].pwd === pwd ? true : false;
+    };
+    switch (sns) {
+      case 'naver':
+        checkIdPwd(users.user1) ? (isLogIn = true) : (isLogIn = false);
+        return isLogIn;
+      case 'kakaoTalk':
+        checkIdPwd(users.user2) ? (isLogIn = true) : (isLogIn = false);
+        return isLogIn;
+      case 'faceBook':
+        checkIdPwd(users.user3) ? (isLogIn = true) : (isLogIn = false);
+        return isLogIn;
+      case 'google':
+        checkIdPwd(users.user4) ? (isLogIn = true) : (isLogIn = false);
+        return isLogIn;
+      case 'twitter':
+        checkIdPwd(users.user5) ? (isLogIn = true) : (isLogIn = false);
+        return isLogIn;
+      default:
+        return false;
+    }
+  };
+  authenticate(sns, id, pwd)
+    ? showDown(logInWindowForm)
+    : console.log('ID 혹은 PASS WORD가 맞지 않습니다.');
 };
 
-const detective = () => {
+const askLogin = (sns) => {
+  if (isLogIn) return;
+  const showUp = (nodeEl) => {
+    nodeEl.classList.remove('invisible');
+    nodeEl.classList.add('up');
+  };
+  const showDown = (nodeEl) => {
+    nodeEl.classList.add('invisible');
+    nodeEl.classList.remove('up');
+  };
+  const snsWindow = document.getElementById('snsWindow');
+  const logInWindow = document.getElementById('logInWindowForm');
+  switch (sns) {
+    case 'logIn':
+      showUp(snsWindow);
+      return;
+
+    case 'naver':
+      showDown(snsWindow);
+      showUp(logInWindow);
+      dummyUserData.sns = 'naver';
+      //   logIn(false, 'naver') ? showDown(logInWindow) : alert('XXX');
+      return;
+
+    case 'kakaoTalk':
+      showDown(snsWindow);
+      showUp(logInWindow);
+      dummyUserData.sns = 'kakaoTalk';
+      return;
+
+    case 'faceBook':
+      showDown(snsWindow);
+      showUp(logInWindow);
+      dummyUserData.sns = 'faceBook';
+      return;
+    case 'google':
+      showDown(snsWindow);
+      showUp(logInWindow);
+      dummyUserData.sns = 'google';
+      return;
+    case 'twitter':
+      showDown(snsWindow);
+      showUp(logInWindow);
+      dummyUserData.sns = 'twitter';
+      return;
+    default:
+      return;
+  }
+};
+
+const restrictSpam = () => {
   const waitSeconds = () => {
     return new Promise((res) => {
       setTimeout(() => {
         res('lock');
-      }, 3000);
+      }, 1000);
     });
   };
   const getWait = async () => {
@@ -30,11 +140,35 @@ const detective = () => {
     return;
   }
 };
+const restrictWord = (comment) => {
+  comment = comment.toLowerCase();
+  if (comment.slice(-1) === ' ') comment = comment.slice(0, comment.length - 1);
+  if (comment.charAt(0) === ' ') comment = comment.slice(1, comment.length);
+  const kr = restrictWords.kr;
+  let eu = restrictWords.eu;
+  eu = eu.map((v) => v.toLowerCase());
+  let filteredComment = kr.filter((word) => word.includes(comment));
+  filteredComment.push(eu.filter((word) => word.includes(comment)));
+  filteredComment = filteredComment.flat();
+  restrictWords.isRestricted = false;
 
-document.getElementById('comment').focus();
+  if (filteredComment.length > 0 && filteredComment.join() === comment) {
+    alert(`${comment}는 제한된 단어입니다.`);
+    restrictWords.isRestricted = true;
+    return;
+  }
+};
+
+// document.getElementById('comment').focus();
 const getComment = (event) => {
   event.preventDefault();
-  detective();
+
+  restrictWord(document.querySelector('#comment').value);
+  if (restrictWords.isRestricted) return;
+
+  restrictWords.isRestricted = false;
+
+  restrictSpam();
   comments.push(document.querySelector('#comment').value);
   document.querySelector('#comment').value = '';
   setComment(comments);
@@ -76,7 +210,6 @@ const makeModifyBtn = (comments) => {
     if (modifyBtn.innerHTML === '수정') {
       modifyBtn.innerHTML = '취소';
 
-      console.log(comments);
       comments.map((v, i) => {
         if (parseInt(i + 1) === id) {
           return;
@@ -101,8 +234,6 @@ const makeModifyBtn = (comments) => {
       modifySubmitBtn.innerHTML = '등록';
 
       const modifyForm = document.createElement('form');
-      //
-
       modifyForm.id = id + 'modifyForm';
       modifyForm.appendChild(modifyInputComment);
       modifyForm.appendChild(modifySubmitBtn);
@@ -111,7 +242,6 @@ const makeModifyBtn = (comments) => {
       const modifySubmitBtnFnc = () => {
         modifyBtn.innerHTML = '수정';
         const modifiedValue = document.getElementById(id + 'modify').value;
-        console.log(comments[id - 1]);
         comments[id - 1] = modifiedValue;
 
         document.getElementById(id + 'comment').innerText = modifiedValue;
